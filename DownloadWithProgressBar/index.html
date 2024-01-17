@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Download progress</title>
+    <style>
+        /*
+        *  html5resetcss
+        */
+        html,
+        body,
+        div,
+        span,
+        object,
+        iframe,
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6,
+        p,
+        blockquote,
+        pre,
+        abbr,
+        address,
+        cite,
+        code,
+        del,
+        dfn,
+        em,
+        img,
+        ins,
+        kbd,
+        q,
+        samp,
+        small,
+        strong,
+        sub,
+        sup,
+        var,
+        b,
+        i,
+        dl,
+        dt,
+        dd,
+        ol,
+        ul,
+        li,
+        fieldset,
+        form,
+        label,
+        legend,
+        table,
+        caption,
+        tbody,
+        tfoot,
+        thead,
+        tr,
+        th,
+        td,
+        article,
+        aside,
+        canvas,
+        details,
+        figcaption,
+        figure,
+        footer,
+        header,
+        hgroup,
+        menu,
+        nav,
+        section,
+        summary,
+        time,
+        mark,
+        audio,
+        video {
+            margin: 0;
+            padding: 0;
+            border: 0;
+            outline: 0;
+            font-size: 100%;
+            vertical-align: baseline;
+            background: transparent
+        }
+
+        body {
+            line-height: 1
+        }
+
+        article,
+        aside,
+        details,
+        figcaption,
+        figure,
+        footer,
+        header,
+        hgroup,
+        menu,
+        nav,
+        section {
+            display: block
+        }
+
+        nav ul {
+            list-style: none
+        }
+
+        blockquote,
+        q {
+            quotes: none
+        }
+
+        blockquote:before,
+        blockquote:after,
+        q:before,
+        q:after {
+            content: none
+        }
+
+        a {
+            margin: 0;
+            padding: 0;
+            font-size: 100%;
+            vertical-align: baseline;
+            background: transparent
+        }
+
+        ins {
+            background-color: #ff9;
+            color: #000;
+            text-decoration: none
+        }
+
+        mark {
+            background-color: #ff9;
+            color: #000;
+            font-style: italic;
+            font-weight: bold
+        }
+
+        del {
+            text-decoration: line-through
+        }
+
+        abbr[title],
+        dfn[title] {
+            border-bottom: 1px dotted;
+            cursor: help
+        }
+
+        table {
+            border-collapse: collapse;
+            border-spacing: 0
+        }
+
+        hr {
+            display: block;
+            height: 1px;
+            border: 0;
+            border-top: 1px solid #ccc;
+            margin: 1em 0;
+            padding: 0
+        }
+
+        input,
+        select {
+            vertical-align: middle
+        }
+    </style>
+    <style>
+        :root {
+            --bg: #15161a;
+            --active: #60c9fb;
+            --section: #272a31;
+            --text: #fafcfe;
+        }
+
+        body {
+            height: 95vh;
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: Tahoma, Geneva, Verdana, sans-serif;
+
+        }
+
+        .flex-center {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        main {
+            width: 485px;
+            background-color: var(--section);
+            height: 95%;
+            border-radius: 15px;
+            padding: 2vw;
+            box-sizing: border-box;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            flex-direction: column;
+        }
+
+        main .progressBarContainer {
+            width: 80%;
+            aspect-ratio: 1/1;
+            position: relative;
+        }
+
+        main .progressBarContainer .imageBox {
+            position: relative;
+            overflow: hidden;
+            padding: 20px;
+            box-sizing: border-box;
+            width: 60%;
+            height: 60%;
+        }
+        main .progressBarContainer .imageBox::before {
+            content: "";
+            left: 0;
+            width: 2px;
+            height: 100%;
+            position: absolute;
+            background-color: var(--bg);
+            transform-origin: top;
+            top: 0;
+            transform: scaleY(0);
+        }
+        main.downloadStarted .progressBarContainer .imageBox::before {
+            animation: scaleFull 1s cubic-bezier(0.5, 0.28, 0.32, 1.49);
+        }
+
+
+        main .progressBarContainer .imageBox img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            transition: all cubic-bezier(0.5, 0.28, 0.32, 1.49) 0.3s 0.3s;
+        }
+        main.downloadStarted .progressBarContainer .imageBox img {
+            transform: translateX(-110%);
+        }
+        main .progressBarContainer .progressBar {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            border: 2px solid #fafcfe44;
+            border-radius: 50%;
+            box-sizing: border-box;
+            /* animation: rotation 1s linear infinite; */
+        }
+        main.downloadStarted .progressBarContainer .progressBar {
+            animation: rotation 1s linear infinite 0.3s;
+
+        }
+        main.downloaded .progressBarContainer .progressBar {
+            animation-play-state: paused;
+        }
+        main .progressBarContainer .progressBar::before {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            content: "";
+            border-left: 2px solid var(--active);
+            border-top: 2px solid transparent;
+            rotate: 45deg;
+            left: -2px;
+            top: -2px;
+            opacity: 0;
+            transition: all cubic-bezier(0.5, 0.28, 0.32, 1.49) 0.3s 1s;
+        }
+        main.downloadStarted .progressBarContainer .progressBar::before {
+            opacity: 1;
+        }
+        main.downloaded .progressBarContainer .progressBar::before {
+            opacity: 0;
+            transition-delay: 0s;
+        }
+
+        main .progressBarContainer .progressBar::after {
+            content: "";
+            width: 16px;
+            height: 16px;
+            background-color: var(--text);
+            top: -8px;
+            left: calc(50% - 8px);
+            display: block;
+            border-radius: 50%;
+            position: absolute;
+            transition: all cubic-bezier(0.5, 0.28, 0.32, 1.49) 0.3s;
+            transform: scale(0);
+        }
+        main.downloadStarted .progressBarContainer .progressBar::after {
+            transform: scale(1);
+        }
+        main.downloaded .progressBarContainer .progressBar::after {
+            transition-delay:0.3s ;
+            transform: scale(0);
+        }
+        main .progressBarContainer .percentageDownloaded {
+            font-size: 80px;
+            position: absolute;
+            opacity: 0;
+            visibility: 0;
+            transform: scale(0);
+            transition: all cubic-bezier(0.5, 0.28, 0.32, 1.49) 0.3s 0.3s;
+        }
+        main.downloadStarted .progressBarContainer .percentageDownloaded{
+            transform: scale(1);
+            opacity: 1;
+            visibility: visible;
+        }
+
+        main .downloadButtonContainer {
+            position: relative;
+            width: 50%;
+        }
+
+        main .downloadButtonContainer button {
+            border: none;
+            outline: none;
+            gap: 10px;
+            width: 100%;
+            height: 50px;
+            align-items: stretch;
+            overflow: hidden;
+            display: flex;
+            padding: 0;
+            background-color: var(--active);
+            border-radius: 10px;
+            color: var(--text);
+            cursor: pointer;
+
+        }
+        main .downloadButtonContainer button:nth-child(1) {
+            background-color: var(--text);
+            color: var(--active);
+        }
+
+        main .downloadButtonContainer button:nth-child(2) {
+            position: absolute;
+            top: 0;
+            left: 0;
+            clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%);
+            transition: all linear 0.2s;
+        }
+
+        main .downloadButtonContainer button span:nth-child(1) {
+            width: 80%;
+        }
+
+        main .downloadButtonContainer button span:nth-child(2) {
+            width: 20%;
+            border-left: 1px solid;
+        }
+        main .downloadButtonContainer button span svg{
+            transition: all 0.3s cubic-bezier(0.5, 0.28, 0.32, 1.49);
+
+        }
+        main .downloadButtonContainer button span:nth-child(2) svg.check {
+            position: absolute;
+            transform: scale(0);
+            visibility: hidden;
+            opacity: 0;
+        }
+        main.downloaded .downloadButtonContainer button span:nth-child(2) svg.check {
+            opacity: 1;
+            visibility: visible;
+            transform: scale(1);
+        }
+
+        main.downloadStarted .downloadButtonContainer button span:nth-child(2) svg:not(.check){
+            animation: download 1s ease-in-out 0.5s infinite;
+            transform: translateY(30px) scaleY(0.8);
+        }
+        main.downloaded .downloadButtonContainer button span:nth-child(2) svg:not(.check){
+            animation-play-state:paused ;
+            opacity: 0;
+            visibility: hidden;
+        }
+        @keyframes download {
+            from{
+                transform: translateY(-40px) scaleY(1.2);
+            }
+            to{
+                transform: translateY(30px) scaleY(0.8);
+            }
+        }
+        @keyframes rotation {
+            from {
+                transform: rotate(0);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
+        }
+        @keyframes scaleFull {
+            0%,100%{
+                transform: scaleY(0);
+            }
+            25%,75%{
+                transform: scaleY(1);
+            }
+        }
+    </style>
+</head>
+
+<body class="flex-center">
+    <main>
+        <div class="progressBarContainer flex-center">
+            <div class="progressBar"></div>
+            <div class="imageBox">
+                <img src="img/nodejs.png" alt="nodejs">
+            </div>
+            <div class="percentageDownloaded">0%</div>
+        </div>
+        <div class="downloadButtonContainer">
+            <button>
+                <span class="flex-center downloadButtonText">Download</span>
+                <span class="flex-center downloadButtonIcon">
+                    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 448 512" height="1em"
+                        width="1em" xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M413.1 222.5l22.2 22.2c9.4 9.4 9.4 24.6 0 33.9L241 473c-9.4 9.4-24.6 9.4-33.9 0L12.7 278.6c-9.4-9.4-9.4-24.6 0-33.9l22.2-22.2c9.5-9.5 25-9.3 34.3.4L184 343.4V56c0-13.3 10.7-24 24-24h32c13.3 0 24 10.7 24 24v287.4l114.8-120.5c9.3-9.8 24.8-10 34.3-.4z">
+                        </path>
+                    </svg>
+                    <svg class="check" stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 448 512" height="1em"
+                        width="1em" xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z">
+                        </path>
+                    </svg>
+
+                </span>
+            </button>
+            <button>
+                <span class="flex-center downloadButtonText">Download</span>
+                <span class="flex-center downloadButtonIcon">
+                    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 448 512" height="1em"
+                        width="1em" xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M413.1 222.5l22.2 22.2c9.4 9.4 9.4 24.6 0 33.9L241 473c-9.4 9.4-24.6 9.4-33.9 0L12.7 278.6c-9.4-9.4-9.4-24.6 0-33.9l22.2-22.2c9.5-9.5 25-9.3 34.3.4L184 343.4V56c0-13.3 10.7-24 24-24h32c13.3 0 24 10.7 24 24v287.4l114.8-120.5c9.3-9.8 24.8-10 34.3-.4z">
+                        </path>
+                    </svg>
+                    <svg class="check" stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 448 512" height="1em"
+                        width="1em" xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z">
+                        </path>
+                    </svg>
+
+                </span>
+            </button>
+        </div>
+    </main>
+
+
+
+    <script>
+        const downloadButton = document.querySelector(".downloadButtonContainer")
+        const progressDownloadButton = downloadButton.querySelectorAll("button")[1]
+        const progressDownloadButtonText = progressDownloadButton.querySelector(".downloadButtonText")
+        const main = document.querySelector("main")
+        const percentageDownloadedTag = document.querySelector(".percentageDownloaded")
+        
+        downloadButton.addEventListener("click",function(){
+            main.classList.add("downloadStarted")
+            const dataChunks = []
+            fetch('http://127.0.0.1:5500/file/file.rar').then(res=>{
+                const reader = res.body.getReader()
+                const fileSize = Number(res.headers.get("content-length"))
+                let fileSizeDownloaded = 0
+
+                function readData(){
+                    return reader.read().then(result=>{
+                        if(result.value){
+                            dataChunks.push(result.value)
+                            fileSizeDownloaded += result.value.length
+                            const percentage = Math.round((fileSizeDownloaded / fileSize)*100)
+                            percentageDownloadedTag.innerHTML = percentage + "%"
+                            progressDownloadButton.style.clipPath = `polygon(${percentage}% 0%, 100% 0%, 100% 100%, ${percentage}% 100%)`
+                        }
+                        if(!result.done){
+                            return readData()    
+                        }
+                    })
+                }
+                return readData()
+            }).then(()=>{
+                main.classList.add("downloaded")
+                progressDownloadButtonText.innerHTML = "Downloaded"
+                const aTag = document.createElement("a")
+                const blob = new Blob(dataChunks)
+                aTag.href = URL.createObjectURL(blob)
+                aTag.download = "file.rar"
+                document.body.appendChild(aTag)
+                aTag.click()
+                document.body.removeChild(aTag)
+            })
+        })
+
+    </script>
+</body>
+
+</html>
+
+<!-- 
+bg: #15161a;
+active: #60c9fb;
+section: #272a31;
+text: #fafcfe; 
+-->
+
+<!-- 
+
+<svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 448 512" height="1em" width="1em"
+    xmlns="http://www.w3.org/2000/svg">
+    <path
+        d="M413.1 222.5l22.2 22.2c9.4 9.4 9.4 24.6 0 33.9L241 473c-9.4 9.4-24.6 9.4-33.9 0L12.7 278.6c-9.4-9.4-9.4-24.6 0-33.9l22.2-22.2c9.5-9.5 25-9.3 34.3.4L184 343.4V56c0-13.3 10.7-24 24-24h32c13.3 0 24 10.7 24 24v287.4l114.8-120.5c9.3-9.8 24.8-10 34.3-.4z">
+    </path>
+</svg>
+
+
+<svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 448 512" height="1em"
+    width="1em" xmlns="http://www.w3.org/2000/svg">
+    <path
+        d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z">
+    </path>
+</svg>
+
+-->

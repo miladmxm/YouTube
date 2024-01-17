@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mobile Navigation</title>
+</head>
+<style>
+    /*
+    *  html5resetcss
+    */
+    html,
+    body,
+    div,
+    span,
+    object,
+    iframe,
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6,
+    p,
+    blockquote,
+    pre,
+    abbr,
+    address,
+    cite,
+    code,
+    del,
+    dfn,
+    em,
+    img,
+    ins,
+    kbd,
+    q,
+    samp,
+    small,
+    strong,
+    sub,
+    sup,
+    var,
+    b,
+    i,
+    dl,
+    dt,
+    dd,
+    ol,
+    ul,
+    li,
+    fieldset,
+    form,
+    label,
+    legend,
+    table,
+    caption,
+    tbody,
+    tfoot,
+    thead,
+    tr,
+    th,
+    td,
+    article,
+    aside,
+    canvas,
+    details,
+    figcaption,
+    figure,
+    footer,
+    header,
+    hgroup,
+    menu,
+    nav,
+    section,
+    summary,
+    time,
+    mark,
+    audio,
+    video {
+        margin: 0;
+        padding: 0;
+        border: 0;
+        outline: 0;
+        font-size: 100%;
+        vertical-align: baseline;
+        background: transparent
+    }
+
+    body {
+        line-height: 1
+    }
+
+    article,
+    aside,
+    details,
+    figcaption,
+    figure,
+    footer,
+    header,
+    hgroup,
+    menu,
+    nav,
+    section {
+        display: block
+    }
+
+    nav ul {
+        list-style: none
+    }
+
+    blockquote,
+    q {
+        quotes: none
+    }
+
+    blockquote:before,
+    blockquote:after,
+    q:before,
+    q:after {
+        content: none
+    }
+
+    a {
+        margin: 0;
+        padding: 0;
+        font-size: 100%;
+        vertical-align: baseline;
+        background: transparent
+    }
+
+    ins {
+        background-color: #ff9;
+        color: #000;
+        text-decoration: none
+    }
+
+    mark {
+        background-color: #ff9;
+        color: #000;
+        font-style: italic;
+        font-weight: bold
+    }
+
+    del {
+        text-decoration: line-through
+    }
+
+    abbr[title],
+    dfn[title] {
+        border-bottom: 1px dotted;
+        cursor: help
+    }
+
+    table {
+        border-collapse: collapse;
+        border-spacing: 0
+    }
+
+    hr {
+        display: block;
+        height: 1px;
+        border: 0;
+        border-top: 1px solid #ccc;
+        margin: 1em 0;
+        padding: 0
+    }
+
+    input,
+    select {
+        vertical-align: middle
+    }
+</style>
+<style>
+    :root {
+        --bg: #15161a;
+        --active: #60c9fb;
+        --section: #272a31;
+        --text: #fafcfe;
+    }
+
+    body {
+        -webkit-tap-highlight-color:  rgba(255, 255, 255, 0); 
+        background-color: var(--bg);
+        color: var(--text);
+        font-family: Tahoma, Geneva, Verdana, sans-serif ;
+        font-weight: 200;
+    }
+    main{
+        max-width: 98%;
+        height: 100dvh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        margin: 0 auto;
+    }
+    main nav{
+        border-radius: 35px;
+        background-color: var(--section);
+        padding: 10px 4vw;
+        position: relative;
+    }
+    main nav ul{
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 4vw;
+    }
+    main nav ul li{
+        flex: 1 1 0%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        cursor: pointer;
+    }
+
+    main nav ul li.active svg{
+        transform: scale(0.9) translateY(5px);
+    }
+    main nav ul li.active svg>*[stroke^='#']{
+        stroke: var(--active);
+    }
+    main nav ul li.active svg>*[fill^='#']{
+        fill: var(--active);
+    }
+
+    main nav ul li.active svg>*,
+    main nav ul li svg,
+    main nav ul li span{
+        transition: all cubic-bezier(0.6, 0.51, 0.54, 1.34) 0.3s 0.2s;
+    }
+
+    main nav ul li svg{
+        width: 80%;
+    }
+    main nav ul li span{
+        font-size: 12px;
+    }
+    main nav ul li.active span{
+        color: var(--active);
+    }
+    nav .activeIcon{
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: absolute;
+        top: 0;
+        transform: translate(-50%, -50%);
+        background-color: var(--bg);
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        transition: all cubic-bezier(0.6, 0.51, 0.54, 1.34) 0.5s;
+        left: 0;
+    }
+    nav .activeIcon .point{
+        width: 20px;
+        height: 20px;
+        background-color: var(--active);
+        border-radius: 50%;
+        box-shadow: 0 0 5px var(--active);
+    }
+    nav .activeIcon::after{
+        width: 15px;
+        height: 15px;
+        border-top-left-radius: 20px;
+        position: absolute;
+        left: 100%;
+        content:"";
+        top: 50%;
+        transform: translateX(-30%);
+        box-shadow: 0 -5px var(--bg);
+    }
+    nav .activeIcon::before{
+        width: 15px;
+        height: 15px;
+        border-top-right-radius: 20px;
+        position: absolute;
+        right: 100%;
+        content:"";
+        top: 50%;
+        transform: translateX(30%);
+        box-shadow: 0 -5px var(--bg);
+    }
+</style>
+
+<body>
+    <main>
+        <nav>
+            <ul>
+                <li class="active">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 50 50" fill="none">
+                        <path
+                            d="M10.3771 20.0162L23.8353 8.26659C25.3295 6.96217 27.5514 6.94145 29.0695 8.21779L43.0995 20.0129C44.0086 20.7772 44.5335 21.9042 44.5335 23.092V40.1926C44.5335 42.4143 42.7325 44.2153 40.5109 44.2153H35.1473C32.9257 44.2153 31.1246 42.4143 31.1246 40.1926V38.4305C31.1246 36.2088 29.3236 34.4078 27.102 34.4078H26.4315C24.2099 34.4078 22.4089 36.2088 22.4089 38.4305V40.1926C22.4089 42.4143 20.6079 44.2153 18.3862 44.2153H13.0227C10.801 44.2153 9 42.4143 9 40.1926V23.0465C9 21.885 9.50208 20.7801 10.3771 20.0162Z"
+                            stroke="#fcfcfc" stroke-width="1.5" />
+                    </svg>
+                    <span>
+                        Home
+                    </span>
+                </li>
+                <li>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 50 50" fill="none">
+                        <circle cx="22.7554" cy="21.7554" r="15.0054" stroke="#fcfcfc" stroke-width="1.5" />
+                        <path
+                            d="M39.967 36.15C41.2926 37.9934 40.9473 40.3581 39.4008 41.4702C37.8544 42.5823 35.5027 42.1569 34.1771 40.3135C33.5155 39.3935 33.1844 38.2102 33.2337 37.1128C33.2831 36.0133 33.7048 35.0915 34.4358 34.5658C35.1669 34.0401 36.1749 33.9337 37.233 34.2369C38.289 34.5394 39.3053 35.2299 39.967 36.15Z"
+                            stroke="#fcfcfc" stroke-width="1.5" />
+                    </svg>
+                    <span>
+                        Search
+                    </span>
+                </li>
+                <li>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 50 50" fill="none">
+                        <rect x="6.75" y="6.75" width="35.5" height="35.5" rx="9.25" stroke="#fcfcfc"
+                            stroke-width="1.5" />
+                        <path d="M15 37V19" stroke="#fcfcfc" stroke-width="2" stroke-linecap="round" />
+                        <path d="M25 37V14" stroke="#fcfcfc" stroke-width="2" stroke-linecap="round" />
+                        <path d="M34 37V24" stroke="#fcfcfc" stroke-width="2" stroke-linecap="round" />
+                    </svg>
+                    <span>
+                        Statistic
+                    </span>
+                </li>
+                <li>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 50 50" fill="none">
+                        <path d="M9.99609 14.25H25.0044" stroke="#fcfcfc" stroke-width="2" stroke-linecap="round" />
+                        <rect x="3.75" y="6.75" width="41.5" height="35.5" rx="9.25" stroke="#fcfcfc"
+                            stroke-width="1.5" />
+                        <path d="M29 20C29 17.7909 30.7909 16 33 16H45V26H33C30.7909 26 29 24.2091 29 22V20Z"
+                            stroke="#fcfcfc" stroke-width="2" />
+                        <circle cx="34" cy="21" r="2" fill="#fcfcfc" />
+                    </svg>
+                    <span>
+                        Cards
+                    </span>
+                </li>
+                <li>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 50 50" fill="none">
+                        <circle cx="25" cy="15" r="8.25" stroke="#fcfcfc" stroke-width="1.5" />
+                        <path
+                            d="M10.75 38.5C10.75 31.4584 16.4584 25.75 23.5 25.75H26.5C33.5416 25.75 39.25 31.4584 39.25 38.5C39.25 40.5711 37.5711 42.25 35.5 42.25H14.5C12.4289 42.25 10.75 40.5711 10.75 38.5Z"
+                            stroke="#fcfcfc" stroke-width="1.5" />
+                    </svg>
+                    <span>
+                        Profile
+                    </span>
+                </li>
+            </ul>
+            <div class="activeIcon">
+                <div class="point"></div>
+            </div>
+        </nav>
+    </main>
+    <script>
+        const listItems = document.querySelectorAll("ul li")
+        let activeListItems = document.querySelector("ul li.active")
+        const activeIcon = document.querySelector('.activeIcon')
+        const activeIconPoint = document.querySelector('.activeIcon .point')
+
+        const animationKeyframes = [
+            {transform:"translateY(0)",boxShadow:"0 0 5px #60c9fb"},
+            {transform:"translateY(-100%)",boxShadow:"0 0 10px #60c9fb"},
+            {transform:"translateY(0%)",boxShadow:"0 0 5px #60c9fb"}
+        ]
+        
+        const animationOptions={
+            duration:500,
+            interactions:1,
+            easing:"cubic-bezier(0.6, 0.51, 0.54, 1.34)"
+        }
+
+        function removeActive(){
+            listItems.forEach(listItem=>listItem.classList.remove("active"))
+        }
+        function setPosition(){
+            activeIcon.style.left = activeListItems.offsetLeft +activeListItems.scrollWidth/2 + 'px'
+        }
+        listItems.forEach(function(listItem){
+            listItem.addEventListener("click",()=>{
+                removeActive()
+                listItem.classList.add("active")
+
+                activeListItems = listItem
+                activeIconPoint.animate(animationKeyframes,animationOptions)
+                setPosition()
+            })
+        })
+        window.addEventListener('resize',setPosition)
+        setPosition()
+    </script>
+</body>
+
+</html>
+
+
+<!-- 
+bg: #15161a
+active: #60c9fb
+section: #272a31
+text: #fafcfe
+ -->
+
+
+<!-- 
+    * Home
+<svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 50 50" fill="none">
+    <path d="M10.3771 20.0162L23.8353 8.26659C25.3295 6.96217 27.5514 6.94145 29.0695 8.21779L43.0995 20.0129C44.0086 20.7772 44.5335 21.9042 44.5335 23.092V40.1926C44.5335 42.4143 42.7325 44.2153 40.5109 44.2153H35.1473C32.9257 44.2153 31.1246 42.4143 31.1246 40.1926V38.4305C31.1246 36.2088 29.3236 34.4078 27.102 34.4078H26.4315C24.2099 34.4078 22.4089 36.2088 22.4089 38.4305V40.1926C22.4089 42.4143 20.6079 44.2153 18.3862 44.2153H13.0227C10.801 44.2153 9 42.4143 9 40.1926V23.0465C9 21.885 9.50208 20.7801 10.3771 20.0162Z" stroke="#fcfcfc" stroke-width="1.5"/>
+  </svg>
+
+  * Search
+<svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 50 50" fill="none">
+    <circle cx="22.7554" cy="21.7554" r="15.0054" stroke="#fcfcfc" stroke-width="1.5"/>
+    <path d="M39.967 36.15C41.2926 37.9934 40.9473 40.3581 39.4008 41.4702C37.8544 42.5823 35.5027 42.1569 34.1771 40.3135C33.5155 39.3935 33.1844 38.2102 33.2337 37.1128C33.2831 36.0133 33.7048 35.0915 34.4358 34.5658C35.1669 34.0401 36.1749 33.9337 37.233 34.2369C38.289 34.5394 39.3053 35.2299 39.967 36.15Z" stroke="#fcfcfc" stroke-width="1.5"/>
+  </svg>
+
+ * Statistic
+  <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 50 50" fill="none">
+    <rect x="6.75" y="6.75" width="35.5" height="35.5" rx="9.25" stroke="#fcfcfc" stroke-width="1.5"/>
+    <path d="M15 37V19" stroke="#fcfcfc" stroke-width="2" stroke-linecap="round"/>
+    <path d="M25 37V14" stroke="#fcfcfc" stroke-width="2" stroke-linecap="round"/>
+    <path d="M34 37V24" stroke="#fcfcfc" stroke-width="2" stroke-linecap="round"/>
+  </svg>
+
+  * Cards
+  <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 50 50" fill="none">
+    <path d="M9.99609 14.25H25.0044" stroke="#fcfcfc" stroke-width="2" stroke-linecap="round"/>
+    <rect x="3.75" y="6.75" width="41.5" height="35.5" rx="9.25" stroke="#fcfcfc" stroke-width="1.5"/>
+    <path d="M29 20C29 17.7909 30.7909 16 33 16H45V26H33C30.7909 26 29 24.2091 29 22V20Z" stroke="#fcfcfc" stroke-width="2"/>
+    <circle cx="34" cy="21" r="2" fill="#fcfcfc"/>
+  </svg>
+
+  * Profile
+  <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 50 50" fill="none">
+    <circle cx="25" cy="15" r="8.25" stroke="#fcfcfc" stroke-width="1.5"/>
+    <path d="M10.75 38.5C10.75 31.4584 16.4584 25.75 23.5 25.75H26.5C33.5416 25.75 39.25 31.4584 39.25 38.5C39.25 40.5711 37.5711 42.25 35.5 42.25H14.5C12.4289 42.25 10.75 40.5711 10.75 38.5Z" stroke="#fcfcfc" stroke-width="1.5"/>
+  </svg> -->
