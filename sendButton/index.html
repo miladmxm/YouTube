@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Send button</title>
+
+    <!-- * Reset CSS -->
+    <style>
+        /*
+        *  html5resetcss
+        */
+        html,
+        body,
+        div,
+        span,
+        object,
+        iframe,
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6,
+        p,
+        blockquote,
+        pre,
+        abbr,
+        address,
+        cite,
+        code,
+        del,
+        dfn,
+        em,
+        img,
+        ins,
+        kbd,
+        q,
+        samp,
+        small,
+        strong,
+        sub,
+        sup,
+        var,
+        b,
+        i,
+        dl,
+        dt,
+        dd,
+        ol,
+        ul,
+        li,
+        fieldset,
+        form,
+        label,
+        legend,
+        table,
+        caption,
+        tbody,
+        tfoot,
+        thead,
+        tr,
+        th,
+        td,
+        article,
+        aside,
+        canvas,
+        details,
+        figcaption,
+        figure,
+        footer,
+        header,
+        hgroup,
+        menu,
+        nav,
+        section,
+        summary,
+        time,
+        mark,
+        audio,
+        video {
+            margin: 0;
+            padding: 0;
+            border: 0;
+            outline: 0;
+            font-size: 100%;
+            vertical-align: baseline;
+            background: transparent
+        }
+
+        body {
+            line-height: 1
+        }
+
+        article,
+        aside,
+        details,
+        figcaption,
+        figure,
+        footer,
+        header,
+        hgroup,
+        menu,
+        nav,
+        section {
+            display: block
+        }
+
+        nav ul {
+            list-style: none
+        }
+
+        blockquote,
+        q {
+            quotes: none
+        }
+
+        blockquote:before,
+        blockquote:after,
+        q:before,
+        q:after {
+            content: none
+        }
+
+        a {
+            margin: 0;
+            padding: 0;
+            font-size: 100%;
+            vertical-align: baseline;
+            background: transparent
+        }
+
+        ins {
+            background-color: #ff9;
+            color: #000;
+            text-decoration: none
+        }
+
+        mark {
+            background-color: #ff9;
+            color: #000;
+            font-style: italic;
+            font-weight: bold
+        }
+
+        del {
+            text-decoration: line-through
+        }
+
+        abbr[title],
+        dfn[title] {
+            border-bottom: 1px dotted;
+            cursor: help
+        }
+
+        table {
+            border-collapse: collapse;
+            border-spacing: 0
+        }
+
+        hr {
+            display: block;
+            height: 1px;
+            border: 0;
+            border-top: 1px solid #ccc;
+            margin: 1em 0;
+            padding: 0
+        }
+
+        input,
+        select {
+            vertical-align: middle
+        }
+    </style>
+
+    <!-- * Main CSS -->
+    <style>
+        :root {
+            --bg: #15161a;
+            --active: #60c9fb;
+            --section: #272a31;
+            --text: #fafcfe;
+        }
+
+        body {
+            background-color: var(--bg);
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        #sendButton {
+            display: flex;
+            border: none;
+            outline: none;
+            background-color: var(--active);
+            align-items: center;
+            justify-content: center;
+            color: var(--text);
+            height: 40px;
+            aspect-ratio: 2/1;
+            border-radius: 40px;
+            position: relative;
+            gap: 6px;
+            cursor: pointer;
+            overflow: hidden;
+            transition: all 0.5s;
+        }
+
+        #sendButton.active {
+            aspect-ratio: 1/1;
+            gap: 0;
+        }
+
+        #sendButton.active.sent {
+            aspect-ratio: 2/1;
+            transition-delay: 1s;
+        }
+
+        #sendButton .text {
+            width: 35px;
+            transition: all 0.5s;
+            overflow: hidden;
+            text-align: left;
+        }
+
+        #sendButton.active .text {
+            width: 0;
+        }
+
+        #sendButton.active.sent .text {
+            width: 35px;
+            transition-delay: 1s;
+        }
+
+        #sendButton .sendIcon {
+            height: 30%;
+            width: fit-content;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.5s;
+        }
+
+        #sendButton.active .sendIcon {
+            transform: translateY(-80%);
+
+        }
+
+        #sendButton.active.sent .sendIcon {
+            transform: translateY(-40px);
+        }
+
+        #sendButton .sendIcon svg {
+            height: 100%;
+        }
+
+        #sendButton .smoke {
+            display: flex;
+            width: 10px;
+            justify-content: space-between;
+            align-items: stretch;
+            aspect-ratio: 1/2;
+            overflow: hidden;
+            position: absolute;
+            opacity: 0;
+            visibility: hidden;
+            bottom: 2px;
+        }
+
+        #sendButton.active .smoke {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        #sendButton.active.sent .smoke {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        #sendButton .smoke>span {
+            display: block;
+            width: 1px;
+            height: 100%;
+            background-color: var(--text);
+            animation: smoke 0.3s linear infinite;
+        }
+
+        #sendButton .smoke>span:nth-child(2) {
+            animation-delay: 0.1s;
+        }
+
+        #sendButton .smoke>span:nth-child(3) {
+            animation-delay: 0.2s;
+        }
+
+        @keyframes smoke {
+            0% {
+                transform: translateY(-100%);
+            }
+
+            100% {
+                transform: translateY(100%);
+            }
+        }
+
+        #sendButton .check {
+            position: absolute;
+            height: 50%;
+            color: var(--text);
+            clip-path: polygon(0% 0%, 0% 0%, 0% 100%, 0% 100%);
+            transition: all 0.5s, right 0.5s 1s;
+            right: 25%;
+        }
+
+        #sendButton .check svg {
+            height: 100%;
+        }
+
+        #sendButton.sent .check {
+            right: 15%;
+            clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%);
+        }
+    </style>
+</head>
+
+<body>
+
+    <main>
+        <button id="sendButton">
+            <span class="text">Send</span>
+            <span class="sendIcon">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="#ffffff" viewBox="0 0 385.656 414.406">
+                    <path
+                        d="M64,414L219,73c16.8-28.3,57.727-27.685,74,0,4.306,9.285,156,343,156,343s7.734,52.626-50,50c-5.452-1.59-122-53-122-53s-0.227-93.146,0-112c-3.18-23.624-38.157-25.983-43,0-0.3,13.489,0,112,0,112L116,466S58.929,474.563,64,414Z"
+                        transform="translate(-63.688 -52)" />
+                </svg>
+            </span>
+            <span class="smoke">
+                <span></span><span></span><span></span>
+            </span>
+            <span class="check">
+                <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 448 512"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path
+                        d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z">
+                    </path>
+                </svg>
+            </span>
+        </button>
+    </main>
+
+    <script>
+        const sendButton = document.querySelector("#sendButton")
+        const sendButtonText = document.querySelector("#sendButton .text")
+        sendButton.addEventListener("click", () => {
+            if (!sendButton.classList.contains("active")) {
+                sendButton.classList.add("active")
+                setTimeout(() => {
+                    sendButton.classList.add("sent")
+                    sendButtonText.innerText = "Sent"
+                    setTimeout(() => {
+                        sendButtonText.innerText = "Send"
+                        sendButton.classList.remove("active")
+                        sendButton.classList.remove("sent")
+                    },2000)
+                }, 2000)
+            }
+        })
+    </script>
+</body>
+
+</html>
