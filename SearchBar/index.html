@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <!-- todo: subscribe my channel (miladhasibi)-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Bar</title>
+    <!-- * Reset CSS -->
+    <style>
+        /*
+        *  html5resetcss
+        */
+        html,
+        body,
+        div,
+        span,
+        object,
+        iframe,
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6,
+        p,
+        blockquote,
+        pre,
+        abbr,
+        address,
+        cite,
+        code,
+        del,
+        dfn,
+        em,
+        img,
+        ins,
+        kbd,
+        q,
+        samp,
+        small,
+        strong,
+        sub,
+        sup,
+        var,
+        b,
+        i,
+        dl,
+        dt,
+        dd,
+        ol,
+        ul,
+        li,
+        fieldset,
+        form,
+        label,
+        legend,
+        table,
+        caption,
+        tbody,
+        tfoot,
+        thead,
+        tr,
+        th,
+        td,
+        article,
+        aside,
+        canvas,
+        details,
+        figcaption,
+        figure,
+        footer,
+        header,
+        hgroup,
+        menu,
+        nav,
+        section,
+        summary,
+        time,
+        mark,
+        audio,
+        video {
+            margin: 0;
+            padding: 0;
+            border: 0;
+            outline: 0;
+            font-size: 100%;
+            vertical-align: baseline;
+            background: transparent
+        }
+
+        body {
+            line-height: 1
+        }
+
+        article,
+        aside,
+        details,
+        figcaption,
+        figure,
+        footer,
+        header,
+        hgroup,
+        menu,
+        nav,
+        section {
+            display: block
+        }
+
+        nav ul {
+            list-style: none
+        }
+
+        blockquote,
+        q {
+            quotes: none
+        }
+
+        blockquote:before,
+        blockquote:after,
+        q:before,
+        q:after {
+            content: none
+        }
+
+        a {
+            margin: 0;
+            padding: 0;
+            font-size: 100%;
+            vertical-align: baseline;
+            background: transparent
+        }
+
+        ins {
+            background-color: #ff9;
+            color: #000;
+            text-decoration: none
+        }
+
+        mark {
+            background-color: #ff9;
+            color: #000;
+            font-style: italic;
+            font-weight: bold
+        }
+
+        del {
+            text-decoration: line-through
+        }
+
+        abbr[title],
+        dfn[title] {
+            border-bottom: 1px dotted;
+            cursor: help
+        }
+
+        table {
+            border-collapse: collapse;
+            border-spacing: 0
+        }
+
+        hr {
+            display: block;
+            height: 1px;
+            border: 0;
+            border-top: 1px solid #ccc;
+            margin: 1em 0;
+            padding: 0
+        }
+
+        input,
+        select {
+            vertical-align: middle
+        }
+    </style>
+
+    <!-- * Main CSS -->
+    <style>
+        :root {
+            --bg: #15161a;
+            --section: #272a31;
+            --text: #fafcfe;
+        }
+
+        body {
+            background-color: var(--bg);
+            min-height: 100vh;
+            font-family: Tahoma, Geneva, Verdana, sans-serif;
+            color: var(--section);
+        }
+        .center{
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        button,input{
+            border: none;
+            outline: none;
+            padding: 0;
+        }
+        .formContainer{
+            display: flex;
+            align-items: stretch;
+            justify-content: center;
+            flex-direction: column;
+            position: relative;
+        }
+        .formContainer::before{
+            background-color: var(--section);
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 40px;
+            content: "";
+            z-index: -1;
+            border-radius: 10px;
+            transition: all 0.5s 0.5s;
+        }
+        .formContainer #searchForm{
+            position: relative;
+        }
+        .formContainer #searchForm::before{
+            content: "";
+            width: 0;
+            position: absolute;
+            bottom: 0;
+            background-color: var(--bg);
+            height: 1px;
+            opacity: 0.3;
+            transition: all 0.5s 1s;
+        }
+        .formContainer #searchForm #searchInput{
+            background-color: transparent;
+            width: 0;
+            overflow: hidden;
+            clip-path: polygon(0% 0%, 0% 0%, 0% 100%, 0% 100%);
+            transition: all 0.5s , clip-path 0.5s 0.5s;
+        }
+        .formContainer #searchForm .searchButton{
+            background-color: transparent;
+            transition: all 0.5s 0.5s;
+            padding: 0;
+            height: 40px;
+            aspect-ratio: 1/1;
+            border-radius: 10px;
+            color: var(--text);
+            font-size: 20px;
+            cursor: pointer;
+        }
+        .formContainer #searchForm .closeButton{
+            background-color: transparent;
+            width: 0;
+            overflow: hidden;
+            opacity: 0;
+            transform: rotate(-45deg);
+            font-size: 20px;
+            cursor: pointer;
+            transition:all 0.5s 0s, width 0.5s 0s;
+        }
+     
+        .formContainer.active:has(.result.hasValue) #searchForm::before{
+            width: 80%;
+        }
+
+        .formContainer.active #searchForm #searchInput{
+            width: 200px;
+            clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%);
+        }
+        .formContainer.active::before{
+            width: 100%;
+            background-color: var(--text);
+        }
+        .formContainer.active #searchForm .searchButton{
+            color: var(--section);
+        }
+        .formContainer.active #searchForm .closeButton{
+            transform: rotate(0);
+            transition:all 0.5s 0.8s, width 0.5s 0s;
+            opacity: 1;
+            width: 40px;
+        }
+
+
+        .formContainer .result{
+            overflow: hidden;
+            height: 0;
+            width: 40px;
+            transition: all 0.5s;
+            max-width: 100%;
+        }
+        .formContainer .result ul{
+            list-style: none;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            flex-direction: column;
+            gap: 10px;
+            padding: 10px;
+        }
+        .formContainer .result ul li{
+            transform: translateY(-10px);
+            opacity: 0;
+            transition: all 0.5s ease-in-out 1s;
+        }
+        .formContainer .result.hasValue ul li{
+            opacity: 1;
+            cursor: pointer;
+            transform: translateY(0);
+        }
+        .formContainer .result ul li h5{
+            font-size: 15px;
+            margin-bottom: 5px;
+        }
+        .formContainer .result ul li small{
+            font-size: 10px;
+            opacity: 0.8;
+        }
+    </style>
+</head>
+
+<body class="center">
+    <main>
+        <div class="formContainer">
+            <form id="searchForm" class="center">
+                <button class="searchButton center">
+                    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 512 512" height="1em"
+                        width="1em" xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M456.69 421.39 362.6 327.3a173.81 173.81 0 0 0 34.84-104.58C397.44 126.38 319.06 48 222.72 48S48 126.38 48 222.72s78.38 174.72 174.72 174.72A173.81 173.81 0 0 0 327.3 362.6l94.09 94.09a25 25 0 0 0 35.3-35.3zM97.92 222.72a124.8 124.8 0 1 1 124.8 124.8 124.95 124.95 0 0 1-124.8-124.8z">
+                        </path>
+                    </svg>
+                </button>
+                <input type="text" id="searchInput" placeholder="Search...">
+                <button class="closeButton center">
+                    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 512 512" height="1em"
+                        width="1em" xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="m289.94 256 95-95A24 24 0 0 0 351 127l-95 95-95-95a24 24 0 0 0-34 34l95 95-95 95a24 24 0 1 0 34 34l95-95 95 95a24 24 0 0 0 34-34z">
+                        </path>
+                    </svg>
+                </button>
+            </form>
+            <div class="result">
+                <ul>
+                    <li>
+                        <h5>Quis aliqua esse</h5>
+                        <small>Ut tempor elit cillum quis dolor ipsum.</small>
+                    </li>
+                    <li>
+                        <h5>Enim sit qui </h5>
+                        <small>Anim voluptate et fugiat irure.</small>
+                    </li>
+                    <li>
+                        <h5>Ullamco dolore</h5>
+                        <small>Sunt quis veniam ut fugiat aute laborum velit.</small>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </main>
+
+
+    <script>
+        const searchForm = document.querySelector("#searchForm")
+
+        const searchButton = document.querySelector(".searchButton")
+        const closeButton = document.querySelector(".closeButton")
+        const formContainer = document.querySelector(".formContainer")
+        const searchInput = document.querySelector("#searchInput")
+        const result = document.querySelector(".result")
+        const resultListItemContainer = document.querySelector(".result ul")
+        const resultListItems = document.querySelectorAll(".result ul li")
+
+        searchButton.addEventListener("click",function(){
+            if(!formContainer.classList.contains("active")){
+                formContainer.classList.add("active")
+            }
+        })
+        closeButton.addEventListener("click",function(){
+            if(formContainer.classList.contains("active")){
+                searchInput.value = ""
+                if(result.classList.contains("hasValue")){
+                    result.classList.remove("hasValue")
+                    result.style.height=0
+                    setTimeout(()=>{
+                        result.style.width=0
+                        formContainer.classList.remove("active")
+                    },500)
+                }else{
+                    result.style.width=0
+                    formContainer.classList.remove("active")
+                }
+                
+            }
+        })
+
+        resultListItems.forEach((li,i) => {
+            li.style.transitionDelay = i/5+1+'s'
+            
+        });
+        searchInput.addEventListener("keyup",function(e){
+            if(searchInput.value.length>2){
+                result.classList.add("hasValue")
+                result.style.width = searchForm.scrollWidth + 'px'
+                setTimeout(() => {
+                    if(result.classList.contains("hasValue"))result.style.height = resultListItemContainer.scrollHeight + 'px'
+                }, 1000);
+            }else{
+                result.classList.remove("hasValue")
+                result.style.height = 0 + 'px'
+            }
+        })
+
+        searchForm.addEventListener("submit",function(event){
+            event.preventDefault()
+        })
+    </script>
+</body>
+
+</html>
